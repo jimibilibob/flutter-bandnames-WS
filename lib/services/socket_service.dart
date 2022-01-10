@@ -1,21 +1,21 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-enum ServerStatus { online, offline, connecting }
+enum ServerStatus { Online, Offline, Connecting }
 
 class SocketService with ChangeNotifier {
-  ServerStatus _serverStatus = ServerStatus.connecting;
+  ServerStatus _serverStatus = ServerStatus.Connecting;
   final IO.Socket _socket = IO.io(
-      'http://192.168.1.230:3000',
+      'https://flutter-ws-server.herokuapp.com/',
       IO.OptionBuilder()
-          .setTransports(['websocket']) // for Flutter or Dart VM
+          .setTransports(['websocket'])
           .enableAutoConnect()
           .build());
 
   ServerStatus get serverStatus => _serverStatus;
-  IO.Socket get socket => _socket;
 
+  IO.Socket get socket => _socket;
   Function get emit => _socket.emit;
 
   SocketService() {
@@ -24,23 +24,22 @@ class SocketService with ChangeNotifier {
 
   void _initConfig() {
     // Dart client
+    try {
+      _socket.connect();
+      print('TRYING TO CONNECT!!');
+      _socket.on('connect', (_) {
+        print('CONECTED!!');
+        _serverStatus = ServerStatus.Online;
+        notifyListeners();
+      });
 
-    _socket.onConnect((_) {
-      _serverStatus = ServerStatus.online;
-      notifyListeners();
-    });
-
-    _socket.on('new-message', (payload) {
-      print("New message:");
-      print("Name:" + payload['name']);
-      print("Message:" + (payload['message'] ?? 'No message'));
-    });
-
-    _socket.onDisconnect((_) {
-      _serverStatus = ServerStatus.offline;
-      notifyListeners();
-    });
-
-    _socket.on('fromServer', (_) => print(_));
+      _socket.on('disconnect', (_) {
+        print('DISCONNECTED!!');
+        _serverStatus = ServerStatus.Offline;
+        notifyListeners();
+      });
+    } catch (e) {
+      print('ERROR $e');
+    }
   }
 }

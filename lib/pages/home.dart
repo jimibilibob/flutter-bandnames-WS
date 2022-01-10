@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           Container(
               margin: const EdgeInsets.only(right: 10),
-              child: socketService.serverStatus == ServerStatus.online
+              child: socketService.serverStatus == ServerStatus.Online
                   ? Icon(Icons.check_circle, color: Colors.blue[300])
                   : Icon(Icons.offline_bolt, color: Colors.red[300]))
         ],
@@ -61,13 +61,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
+          Expanded(child: _showGraph()),
           Expanded(
             child: ListView.builder(
               itemCount: bands.length,
               itemBuilder: (context, index) => _bandTile(bands[index]),
             ),
           ),
-          _showGraph(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -97,19 +97,19 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       height: 200,
       child: dataMap.isEmpty
-          ? null
+          ? const SizedBox()
           : PieChart(
               dataMap: dataMap,
               animationDuration: const Duration(milliseconds: 800),
               chartLegendSpacing: 32,
-              chartRadius: MediaQuery.of(context).size.width / 3.2,
+              // chartRadius: 10,
               colorList: colorList,
               initialAngleInDegree: 1,
               chartType: ChartType.disc,
-              ringStrokeWidth: 32,
-              centerText: "HYBRID",
+              ringStrokeWidth: 1,
+              centerText: "BANDS",
               legendOptions: const LegendOptions(
-                showLegendsInRow: true,
+                // showLegendsInRow: false,
                 legendPosition: LegendPosition.right,
                 showLegends: true,
                 legendShape: BoxShape.circle,
