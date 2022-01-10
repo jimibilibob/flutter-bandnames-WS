@@ -12,6 +12,13 @@ class StatusScreen extends StatelessWidget {
       body: Center(
         child: Text('ServerStatus: ${socketService.serverStatus}'),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.message),
+        onPressed: () {
+          socketService.emit('emit-message',
+              {'name': 'Flutter', 'message': 'Mettings from Flutter'});
+        },
+      ),
     );
   }
 }
